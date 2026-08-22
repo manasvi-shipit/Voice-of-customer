@@ -4,9 +4,11 @@ A Streamlit app that turns raw customer reviews into a prioritized, evidence-bac
 
 Point it at a CSV of reviews and it will: classify each review into a theme and flag churn risk, pull real (never invented) quotes to back up each theme, and rank themes by a fully deterministic formula combining volume and churn risk — so a PM gets a ranked "what to fix first" list instead of a pile of raw reviews.
 
+![Dashboard overview](docs/screenshots/dashboard-overview.png)
+
 ## Why it's built this way
 
-Every stage that touches an LLM has a guardrail, and the app surfaces proof that each guardrail actually caught something in the current run, not just that it exists in the code:
+Every stage that touches an LLM has a guardrail, and the app surfaces proof actually caught something in the current run, not just that it exists in the code:
 
 - **Taxonomy violations caught** — if the model invents a category outside the fixed list, it's flagged `INVALID_THEME_NEEDS_REVIEW`, not silently kept.
 - **Missing reviews caught** — if a review never comes back in the model's response, it's flagged `MISSING_FROM_LLM_RESPONSE` rather than quietly dropped.
@@ -25,6 +27,11 @@ Three pipeline stages, run as subprocesses and orchestrated by the Streamlit UI:
    ```
    priority_score = frequency_share × 0.5 + churn_rate × 0.5
    ```
+
+<p float="left">
+  <img src="docs/screenshots/prioritized-roadmap.png" width="49%" alt="Prioritized roadmap table" />
+  <img src="docs/screenshots/theme-citations.png" width="49%" alt="Theme summary with a verbatim, code-fetched citation" />
+</p>
 
 [app.py](app.py) is the Streamlit UI — an orchestrator, not a reimplementation. It streams each script's output live, computes every dashboard number directly from the pipeline's own CSV outputs (including real run-over-run deltas), and lets you correct a misclassified review inline, with every correction logged for later eval/prompt work.
 
