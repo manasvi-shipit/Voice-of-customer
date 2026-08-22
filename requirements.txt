@@ -1,0 +1,7 @@
+streamlit>=1.61
+pandas
+matplotlib
+google-genai
+openai
+google-play-scraper
+scikit-learn
